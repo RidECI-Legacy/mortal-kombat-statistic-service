@@ -1,0 +1,7 @@
+from enum import Enum
+
+class BadgeType(str, Enum):
+    ECO_COMPLIANT = "ECO_COMPLIANT"
+    GREEN_PASSER = "GREEN_PASSER"
+    HERO_OF_THE_AIR = "HERO_OF_THE_AIR"
+    RELIABLE_ECODRIVER = "RELIABLE_ECODRIVER"
