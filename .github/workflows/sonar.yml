@@ -1,0 +1,66 @@
+name: SonarQube Analysis
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches:
+      - main
+      - develop
+
+jobs:
+  sonar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libfreetype6-dev libxml2-dev libxslt1-dev
+          
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          # Instalamos reportlab primero para asegurar su compilación
+          pip install reportlab==3.6.13 xhtml2pdf==0.2.11
+          pip install -r requirements.txt
+          pip install pytest pytest-cov
+        
+      - name: Run tests with coverage
+        run: pytest --cov=src --cov-report=xml
+        env:
+          MONGO_URI: ${{ secrets.MONGO_URI }}
+          REDIS_HOST: ${{ secrets.REDIS_HOST }}
+          REDIS_PASSWORD: ${{ secrets.REDIS_PASSWORD }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          RABBITMQ_URL: ${{ secrets.RABBITMQ_URL }}
+          AWS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY }}
+          AWS_SECRET_KEY: ${{ secrets.AWS_SECRET_KEY }}
+          AWS_BUCKET_NAME: ${{ secrets.AWS_BUCKET_NAME }}
+        
+      - name: Install SonarScanner
+        run: |
+          npm install -g sonar-scanner
+          
+      - name: Run SonarCloud Scan
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: |
+          sonar-scanner \
+            -Dsonar.projectKey=mortal-kombat-stats-service \
+            -Dsonar.organization=rideci-legacy-1 \
+            -Dsonar.host.url=https://sonarcloud.io \
+            -Dsonar.python.coverage.reportPaths=coverage.xml \
+            -Dsonar.sources=src \
+            -Dsonar.tests=tests \
+            -Dsonar.exclusions=**/application/**,**/core/**,**/domain/enums/**,**/domain/models/**,**/infrastructure/repositories/**,**/infrastructure/analytics/**,**/__init__.py,**/main.py,src/rideci/domain/services/AIAnalysisService.py,src/rideci/infrastructure/consumers/connection.py,src/rideci/infrastructure/consumers/main_worker.py,src/rideci/infrastructure/storage/S3StorageService.py

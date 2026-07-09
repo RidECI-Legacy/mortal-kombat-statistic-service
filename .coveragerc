@@ -1,0 +1,17 @@
+[run]
+source = src
+
+omit =
+    src/rideci/application/*
+    src/rideci/core/*
+    src/rideci/domain/enums/*
+    src/rideci/domain/models/*
+    src/rideci/infrastructure/repositories/*
+    src/rideci/infrastructure/analytics/*
+    src/rideci/infrastructure/storage/*
+    src\rideci\domain\services\AIAnalysisService.py  
+    */__init__.py
+    */main.py
+
+[report]
+show_missing = True
