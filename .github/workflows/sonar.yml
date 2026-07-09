@@ -27,10 +27,9 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
+          pip install reportlab==4.0.0 xhtml2pdf==0.2.11
           pip install -r requirements.txt
-          pip install boto3 pydantic-settings pymongo motor
           pip install pytest pytest-cov
-          pip list
         
       - name: Run tests with coverage
         run: pytest --cov=src --cov-report=xml
