@@ -6,6 +6,7 @@ on:
       - main
       - develop
   pull_request:
+    types: [opened, synchronize, reopened]
     branches:
       - main
       - develop
@@ -14,15 +15,21 @@ jobs:
   sonar:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5 
         with:
           python-version: '3.12'
+          cache: 'pip' 
+          
       - name: Install dependencies
         run: pip install pytest pytest-cov
+        
       - name: Run tests with coverage
         run: pytest --cov=src --cov-report=xml
+        
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@v4
         env:
@@ -33,4 +40,3 @@ jobs:
             -Dsonar.organization=rideci-legacy-1
             -Dsonar.host.url=https://sonarcloud.io
             -Dsonar.python.coverage.reportPaths=coverage.xml
-
