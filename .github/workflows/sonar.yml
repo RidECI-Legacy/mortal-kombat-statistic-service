@@ -22,27 +22,27 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+          cache: 'pip' 
           
-      - name: Cache SonarCloud
-        uses: actions/cache@v4
-        with:
-          path: ~/.sonar/cache
-          key: ${{ runner.os }}-sonar
-          restore-keys: ${{ runner.os }}-sonar
-
       - name: Install dependencies
         run: pip install pytest pytest-cov
         
       - name: Run tests with coverage
         run: pytest --cov=src --cov-report=xml
         
-      - name: SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@v4
+      - name: Install SonarScanner
+        run: |
+          npm install -g sonar-scanner
+          
+      - name: Run SonarCloud Scan
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        with:
-          args: >
-            -Dsonar.projectKey=mortal-kombat-stats-service
-            -Dsonar.organization=rideci-legacy-1
-            -Dsonar.host.url=https://sonarcloud.io
-            -Dsonar.python.coverage.reportPaths=coverage.xml
+        run: |
+          sonar-scanner \
+            -Dsonar.projectKey=mortal-kombat-stats-service \
+            -Dsonar.organization=rideci-legacy-1 \
+            -Dsonar.host.url=https://sonarcloud.io \
+            -Dsonar.python.coverage.reportPaths=coverage.xml \
+            -Dsonar.sources=src \
+            -Dsonar.tests=tests \
+            -Dsonar.exclusions=**/application/**,**/core/**,**/domain/enums/**,**/domain/models/**,**/infrastructure/repositories/**,**/infrastructure/analytics/**,**/__init__.py,**/main.py,src/rideci/domain/services/AIAnalysisService.py,src/rideci/infrastructure/consumers/connection.py,src/rideci/infrastructure/consumers/main_worker.py,src/rideci/infrastructure/storage/S3StorageService.py
