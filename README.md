@@ -26,6 +26,15 @@ The Stats & Sustainability module follows an **unacoupled Hexagonal (Clean) Arch
 * **🧠 Domain (Core)**: Contains business rules and statistic calculation logic (CO2 impact, sustainability scores).
 * **🎯 Ports (Interfaces)**: Defines contracts for external communications.
 * **🔌 Adapters (Infrastructure)**: Implementations of ports including Redis caching, MongoDB persistence, and FastAPI controllers.
+---
+
+## 🌟 Module Context
+
+This diagram illustrates how our module connects to the rest of the platform. Essentially, we take trip and user data from other microservices, process it to obtain sustainability metrics, and deliver it in a user-friendly way for both administrators and end users. We are the analytics engine that transforms raw transportation data into environmental value.
+
+![Context Diagram](./docs/diagrams/DiagramaContexto.png)
+
+---
 
 ## 📂 Clean - Hexagonal Structure
 ```
